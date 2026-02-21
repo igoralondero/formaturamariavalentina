@@ -561,19 +561,18 @@
             const nomeRaw = document.getElementById('input-nome').value;
             const nome = nomeRaw.trim();
             const btn = document.getElementById('btn-submit');
-            const originalText = btn.innerText;
+            const originalText = isLoginMode ? 'Entrar' : 'Confirmar';
             
             btn.innerText = 'Verificando...'; 
             btn.disabled = true;
 
-            // Normalização local para comparação
             const normalize = (str) => str ? str.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
             const nomeNormalizado = normalize(nome);
 
             try {
-                // 1. BUSCA PRÉVIA (Evita duplicatas e processamento infinito)
+                // 1. BUSCA PRÉVIA
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 segundos para ler
+                const timeoutId = setTimeout(() => controller.abort(), 8000); 
 
                 let existingGuest = null;
                 try {
@@ -582,48 +581,50 @@
                     const guests = await responseRead.json();
                     existingGuest = guests.find(g => normalize(g.nome) === nomeNormalizado);
                 } catch (readErr) {
-                    console.warn('Falha na leitura prévia, tentando registro direto...');
+                    console.warn('Falha na leitura, prosseguindo com tentativa de registro...');
                 }
                 clearTimeout(timeoutId);
 
-                // 2. SE JÁ EXISTE: LOGIN AUTOMÁTICO
+                // 2. LÓGICA DE LOGIN VS ATUALIZAÇÃO
                 if (existingGuest) {
-                    btn.innerText = 'Entrando...';
-                    const userData = {
-                        nome: existingGuest.nome,
-                        contato: existingGuest.contato,
-                        comparecera: existingGuest.comparecera,
-                        adultos: existingGuest.adultos,
-                        criancas: existingGuest.criancas,
-                        acompanhantes: existingGuest.acompanhantes
-                    };
-                    localStorage.setItem('graduation_rsvp', JSON.stringify(userData));
-                    
-                    setTimeout(() => {
-                        if (userData.comparecera === 'Sim') showMainSite(userData);
-                        else showNotAttendingScreen();
-                    }, 800);
-                    return;
+                    if (isLoginMode) {
+                        // MODO LOGIN: Entra direto
+                        btn.innerText = 'Entrando...';
+                        const userData = {
+                            nome: existingGuest.nome,
+                            contato: existingGuest.contato,
+                            comparecera: existingGuest.comparecera,
+                            adultos: existingGuest.adultos,
+                            criancas: existingGuest.criancas,
+                            acompanhantes: existingGuest.acompanhantes
+                        };
+                        localStorage.setItem('graduation_rsvp', JSON.stringify(userData));
+                        setTimeout(() => {
+                            if (userData.comparecera === 'Sim') showMainSite(userData);
+                            else showNotAttendingScreen();
+                        }, 500);
+                        return;
+                    } else {
+                        // MODO REGISTRO: Pergunta se quer atualizar
+                        const confirmarUpdate = confirm('Você já possui um registro. Deseja atualizar seus dados com as novas informações?');
+                        if (!confirmarUpdate) {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                            return;
+                        }
+                        // Se confirmou, o código continua para o POST abaixo
+                    }
                 }
 
-                // 3. SE NÃO EXISTE E ESTÁ NO MODO LOGIN: AVISA
-                if (isLoginMode) {
-                    alert('Nome não encontrado. Por favor, preencha seus dados para registrar.');
-                    toggleLoginMode();
-                    btn.innerText = 'Confirmar';
-                    btn.disabled = false;
-                    return;
-                }
-
-                // 4. REGISTRO NOVO
-                if (isAttending === null) {
+                // 3. REGISTRO / ATUALIZAÇÃO (POST)
+                if (!isLoginMode && isAttending === null) {
                     alert('Selecione SIM ou NÃO.');
-                    btn.innerText = 'Confirmar';
+                    btn.innerText = originalText;
                     btn.disabled = false;
                     return;
                 }
 
-                btn.innerText = 'Registrando...';
+                btn.innerText = 'Salvando...';
                 const names = Array.from(document.querySelectorAll('.companion-name-input')).map(i => i.value).filter(n => n.trim() !== '');
                 const data = {
                     action: 'upsert', 
@@ -636,9 +637,8 @@
                     data_hora: new Date().toLocaleString('pt-BR')
                 };
 
-                // Envio com timeout de segurança
                 const postController = new AbortController();
-                const postTimeout = setTimeout(() => postController.abort(), 10000);
+                const postTimeout = setTimeout(() => postController.abort(), 15000);
 
                 try {
                     await fetch(GOOGLE_SCRIPT_URL, { 
@@ -648,21 +648,30 @@
                         body: JSON.stringify(data),
                         signal: postController.signal
                     });
-                } catch (postErr) {
-                    console.error('Erro no POST, mas salvando localmente:', postErr);
-                }
+                    
+                    clearTimeout(postTimeout);
+                    btn.innerText = 'Sucesso!';
+                    localStorage.setItem('graduation_rsvp', JSON.stringify(data));
+                    
+                    setTimeout(() => {
+                        if (isAttending) showMainSite(data);
+                        else showNotAttendingScreen();
+                    }, 800);
 
-                clearTimeout(postTimeout);
-                localStorage.setItem('graduation_rsvp', JSON.stringify(data));
-                
-                if (isAttending) showMainSite(data);
-                else showNotAttendingScreen();
+                } catch (postErr) {
+                    clearTimeout(postTimeout);
+                    console.error('Erro no POST:', postErr);
+                    // Mesmo com erro de rede, salvamos local para fluidez
+                    localStorage.setItem('graduation_rsvp', JSON.stringify(data));
+                    if (isAttending) showMainSite(data);
+                    else showNotAttendingScreen();
+                }
 
             } catch (err) {
                 console.error('Erro Geral:', err);
                 btn.disabled = false;
                 btn.innerText = originalText;
-                alert('Ocorreu um erro. Verifique sua internet e tente novamente.');
+                alert('Ocorreu um erro de conexão. Por favor, tente novamente.');
             }
         }
 
