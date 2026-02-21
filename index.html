@@ -660,6 +660,14 @@
                     } else {
                         showNotAttendingScreen();
                     }
+
+                    // Reseta o formulário para um novo registro
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    document.getElementById('rsvp-form').reset();
+                    setAttendance(null);
+                    updateCompanionsList();
+                    isEditingMode = false;
                 }, 800);
 
 
