@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     
     <!-- Configuração do Tailwind -->
     <script>
@@ -17,6 +17,7 @@
                     fontFamily: {
                         serif: ['Cinzel', 'serif'],
                         sans: ['Montserrat', 'sans-serif'],
+                        display: ['Cormorant Garamond', 'serif'],
                     },
                     letterSpacing: {
                         luxury: '0.3em',
@@ -49,15 +50,6 @@
         .text-shadow-premium {
             text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
         }
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -74,19 +66,17 @@
 </head>
 <body class="bg-[#000814] text-white overflow-x-hidden">
 
-    <!-- ESTADO DA APLICAÇÃO (Gerenciado via JS) -->
     <div id="app">
         
-        <!-- TELA 1: HERO E FORMULÁRIO (Visível se não logado) -->
+        <!-- TELA 1: HERO E FORMULÁRIO -->
         <div id="welcome-screen">
-            <!-- Hero Section -->
             <div class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden bg-navy-gradient">
                 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                     <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-900/10 blur-[150px] rounded-full"></div>
                     <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-600/10 blur-[150px] rounded-full"></div>
                 </div>
 
-                <div class="relative z-20 max-w-6xl w-full flex flex-col items-center justify-center space-y-10 animate-[fadeIn_1s_ease-out]">
+                <div class="relative z-20 max-w-6xl w-full flex flex-col items-center justify-center space-y-10 animate-fadeIn">
                     <div class="flex items-center gap-6">
                         <div class="h-[1px] w-16 bg-gradient-to-r from-transparent to-blue-500/50"></div>
                         <span class="text-blue-400 font-sans text-xs tracking-ultra uppercase font-bold">Psicologia 2026</span>
@@ -97,7 +87,6 @@
                         Maria <span class="text-white block sm:inline italic font-medium">Valentina</span>
                     </h1>
 
-                    <!-- Logo Imagem -->
                     <div class="w-56 h-40 md:w-96 md:h-64 flex items-center justify-center">
                         <img src="https://i.imgur.com/tlyqJn0.png" alt="Logo Maria Valentina" class="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                     </div>
@@ -113,11 +102,10 @@
                 </div>
             </div>
 
-            <!-- RSVP Section -->
             <div id="rsvp-section" class="relative py-20 pb-32 px-4 flex flex-col items-center overflow-hidden bg-[#000814]">
                 <form id="rsvp-form" onsubmit="handleRSVPSubmit(event)" class="w-full max-w-2xl bg-[#001d3d]/20 backdrop-blur-3xl p-8 md:p-16 rounded-[3rem] border border-blue-500/10 shadow-2xl relative">
                     <div class="text-center mb-12">
-                        <p class="text-blue-400/60 font-sans text-xs uppercase tracking-ultra font-bold">Registro de Presença</p>
+                        <p class="text-blue-400/60 font-sans text-xs uppercase tracking-ultra font-bold" id="form-title">Registro de Presença</p>
                     </div>
 
                     <div class="space-y-8">
@@ -126,75 +114,119 @@
                             <input id="input-nome" required type="text" class="w-full bg-[#000814]/80 border border-blue-500/20 rounded-xl px-6 py-4 text-white focus:border-blue-500 outline-none transition-all placeholder:text-blue-900/30 font-sans" placeholder="Digite seu nome...">
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-sans font-bold text-blue-400 uppercase tracking-luxury pl-2">Contato (Email ou Whats)</label>
-                            <input id="input-contato" required type="text" class="w-full bg-[#000814]/80 border border-blue-500/20 rounded-xl px-6 py-4 text-white focus:border-blue-500 outline-none transition-all placeholder:text-blue-900/30 font-sans" placeholder="Seu contato...">
-                        </div>
-
-                        <div class="py-6 border-y border-blue-500/10 space-y-6">
-                            <p class="text-center text-xs font-bold uppercase tracking-widest text-blue-200/60">Você irá comparecer?</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <button type="button" onclick="setAttendance(true)" id="btn-sim" class="py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 transition-all">SIM</button>
-                                <button type="button" onclick="setAttendance(false)" id="btn-nao" class="py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 transition-all">NÃO</button>
+                        <div id="registration-fields" class="space-y-8">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-sans font-bold text-blue-400 uppercase tracking-luxury pl-2">Contato (Email ou Whats)</label>
+                                <input id="input-contato" required type="text" class="w-full bg-[#000814]/80 border border-blue-500/20 rounded-xl px-6 py-4 text-white focus:border-blue-500 outline-none transition-all placeholder:text-blue-900/30 font-sans" placeholder="Seu contato...">
                             </div>
-                        </div>
 
-                        <!-- Campos Extras (Escondidos por padrão) -->
-                        <div id="extra-fields" class="hidden space-y-6 animate-[fadeIn_0.5s_ease-out]">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-[9px] font-bold text-blue-400 uppercase tracking-widest block mb-2 text-center">Adultos Extras</label>
-                                    <div class="flex items-center justify-between bg-[#000814]/60 border border-blue-500/20 rounded-xl px-3 py-2">
-                                        <button type="button" onclick="changeCount('adultos', -1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">-</button>
-                                        <input id="input-adultos" type="number" min="0" value="0" readonly class="w-8 bg-transparent text-center text-white font-serif text-xl outline-none">
-                                        <button type="button" onclick="changeCount('adultos', 1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">+</button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="text-[9px] font-bold text-blue-400 uppercase tracking-widest block mb-2 text-center">Crianças</label>
-                                    <div class="flex items-center justify-between bg-[#000814]/60 border border-blue-500/20 rounded-xl px-3 py-2">
-                                        <button type="button" onclick="changeCount('criancas', -1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">-</button>
-                                        <input id="input-criancas" type="number" min="0" value="0" readonly class="w-8 bg-transparent text-center text-white font-serif text-xl outline-none">
-                                        <button type="button" onclick="changeCount('criancas', 1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">+</button>
-                                    </div>
+                            <div class="py-6 border-y border-blue-500/10 space-y-6">
+                                <p class="text-center text-xs font-bold uppercase tracking-widest text-blue-200/60">Você irá comparecer?</p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button type="button" onclick="setAttendance(true)" id="btn-sim" class="py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 transition-all">SIM</button>
+                                    <button type="button" onclick="setAttendance(false)" id="btn-nao" class="py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 transition-all">NÃO</button>
                                 </div>
                             </div>
-                            <div id="companions-list" class="space-y-3"></div>
+
+                            <div id="extra-fields" class="hidden space-y-6">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-[9px] font-bold text-blue-400 uppercase tracking-widest block mb-2 text-center">Adultos Extras</label>
+                                        <div class="flex items-center justify-between bg-[#000814]/60 border border-blue-500/20 rounded-xl px-3 py-2">
+                                            <button type="button" onclick="changeCount('adultos', -1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">-</button>
+                                            <input id="input-adultos" type="number" min="0" value="0" readonly class="w-8 bg-transparent text-center text-white font-serif text-xl outline-none">
+                                            <button type="button" onclick="changeCount('adultos', 1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">+</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-bold text-blue-400 uppercase tracking-widest block mb-2 text-center">Crianças</label>
+                                        <div class="flex items-center justify-between bg-[#000814]/60 border border-blue-500/20 rounded-xl px-3 py-2">
+                                            <button type="button" onclick="changeCount('criancas', -1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">-</button>
+                                            <input id="input-criancas" type="number" min="0" value="0" readonly class="w-8 bg-transparent text-center text-white font-serif text-xl outline-none">
+                                            <button type="button" onclick="changeCount('criancas', 1)" class="text-blue-400 text-lg font-bold w-8 h-8 flex items-center justify-center hover:bg-blue-500/10 rounded-lg">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="companions-list" class="space-y-3"></div>
+                            </div>
                         </div>
 
                         <button type="submit" id="btn-submit" class="w-full bg-white text-blue-950 py-5 rounded-xl font-bold uppercase tracking-widest text-xs hover:scale-[1.01] transition-all shadow-xl">
                             Confirmar
                         </button>
+
+                        <div class="text-center mt-6">
+                            <button type="button" id="toggle-login-btn" onclick="toggleLoginMode()" class="text-[10px] text-blue-400/60 hover:text-blue-400 uppercase tracking-widest font-bold transition-all underline underline-offset-4">
+                                Já confirmei minha presença
+                            </button>
+                        </div>
                     </div>
                 </form>
                 
                 <button onclick="toggleAdmin()" class="mt-16 text-[10px] text-blue-300/60 hover:text-white border border-blue-500/20 px-6 py-3 rounded-full uppercase tracking-[0.3em] font-bold transition-all hover:bg-blue-500/10 hover:border-blue-500/50">
-                    Área Administrativa
+                    Acesso restrito
                 </button>
             </div>
         </div>
 
-        <!-- TELA 2: SITE PRINCIPAL (Visível após login/confirmação) -->
-        <div id="main-site" class="hidden">
-            <!-- Navbar -->
-            <nav class="sticky top-0 z-50 bg-[#000814]/95 backdrop-blur-md border-b border-blue-900/20 py-4 px-6 flex justify-between items-center">
-                <img src="https://i.imgur.com/tlyqJn0.png" alt="Logo MV" class="h-8">
-                <div class="flex gap-4 text-[10px] font-bold uppercase tracking-widest">
-                    <a href="#home" class="text-blue-400">Home</a>
-                    <a href="#minha-presenca" class="text-white/60 hover:text-white">Presença</a>
-                    <a href="#evento" class="text-white/60 hover:text-white">Evento</a>
-                    <a href="#local" class="text-white/60 hover:text-white">Local</a>
+        <!-- TELA 2: NÃO COMPARECIMENTO -->
+        <div id="not-attending-screen" class="hidden min-h-screen flex flex-col items-center justify-center text-center px-6 bg-navy-gradient">
+            <div class="max-w-md w-full bg-[#001d3d]/60 p-12 rounded-[3rem] border border-blue-500/20 backdrop-blur-md shadow-2xl">
+                <div class="mb-8 flex justify-center">
+                    <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleAdmin()" class="text-blue-400/60 hover:text-blue-400 text-[10px] uppercase font-bold tracking-widest">Admin</button>
-                    <button onclick="logout()" class="text-red-400/60 hover:text-red-400 text-[10px] uppercase font-bold tracking-widest">Sair</button>
+                <h2 class="text-4xl font-serif text-white mb-4">Que pena!</h2>
+                <p class="text-blue-100/60 text-sm leading-relaxed mb-10">
+                    Sentiremos sua falta nesse momento tão especial. Agradecemos por nos avisar!
+                </p>
+                
+                <div class="space-y-4">
+                    <button onclick="resetRSVP()" class="w-full bg-white text-blue-950 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:scale-[1.02] transition-all shadow-xl">
+                        Mudei de ideia, eu vou!
+                    </button>
+                    <button onclick="logout()" class="w-full bg-blue-900/20 text-white/40 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:text-white transition-all">
+                        Sair
+                    </button>
+                </div>
+            </div>
+            
+            <button onclick="toggleAdmin()" class="mt-16 text-[10px] text-blue-300/60 hover:text-white border border-blue-500/20 px-6 py-3 rounded-full uppercase tracking-[0.3em] font-bold transition-all hover:bg-blue-500/10 hover:border-blue-500/50">
+                Acesso restrito
+            </button>
+        </div>
+
+        <!-- TELA 3: SITE PRINCIPAL -->
+        <div id="main-site" class="hidden">
+            <nav id="main-nav" class="sticky top-0 z-50 bg-[#000814]/95 backdrop-blur-md border-b border-blue-900/20 py-6 px-6 transition-all duration-500">
+                <div class="max-w-6xl mx-auto flex flex-col gap-6 transition-all duration-500" id="nav-container">
+                    <!-- Top Row: Logo and Logout Icon -->
+                    <div class="flex justify-between items-center">
+                        <img src="https://i.imgur.com/tlyqJn0.png" alt="Logo MV" class="h-12 md:h-16 drop-shadow-[0_0_10px_rgba(59,130,246,0.3)] transition-all duration-500" id="nav-logo">
+                        
+                        <button onclick="logout()" class="text-red-400/60 hover:text-red-400 transition-colors p-2" title="Sair">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Bottom Row: Navigation Links (Side by Side) -->
+                    <div class="flex justify-center items-center gap-x-5 text-[10px] font-bold uppercase tracking-[0.2em]">
+                        <a href="#home" class="text-blue-400 hover:text-blue-300 transition-colors">Contagem</a>
+                        <a href="#minha-presenca" class="text-white/60 hover:text-white transition-colors">Presença</a>
+                        <a href="#evento" class="text-white/60 hover:text-white transition-colors">Evento</a>
+                        <a href="#local" class="text-white/60 hover:text-white transition-colors">Local</a>
+                    </div>
                 </div>
             </nav>
 
-             <!-- Home Logada -->
             <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-navy-gradient">
-                <p class="text-blue-400/60 font-sans text-xs uppercase tracking-ultra font-bold mb-10">Contagem Regressiva Para o Grande Dia</p>
-                <h1 class="text-4xl md:text-7xl font-serif text-white mb-8">Presença Confirmada!</h1>
+                <h1 class="text-4xl md:text-7xl font-serif text-white mb-4">Presença Confirmada!</h1>
+                <p class="text-blue-400/60 font-sans text-xs uppercase tracking-ultra font-bold mb-10">Contagem Regressiva</p>
                 <div class="grid grid-cols-4 gap-4 md:gap-8 mb-12">
                     <div class="bg-blue-900/20 p-4 rounded-2xl border border-blue-500/20 w-16 md:w-24 aspect-square flex flex-col items-center justify-center">
                         <span id="days" class="text-2xl md:text-4xl font-serif">00</span>
@@ -215,26 +247,34 @@
                 </div>
             </section>
 
-            <!-- Minha Presença -->
-            <section id="minha-presenca" class="py-20 px-6 bg-[#00040a]">
-                 <div class="bg-[#001d3d]/40 p-8 rounded-3xl border border-blue-500/20 max-w-md w-full text-left mx-auto">
-                    <h3 id="user-name-display" class="text-2xl font-serif mb-2">Convidado</h3>
-                    <p class="text-blue-400 text-xs uppercase tracking-widest mb-6">Status: Confirmado</p>
-                    <div class="grid grid-cols-2 gap-4 text-center">
-                        <div class="bg-blue-950/50 p-4 rounded-xl">
-                            <span id="user-adults-display" class="block text-2xl font-serif">0</span>
-                            <span class="text-[8px] uppercase text-white/40">Adultos</span>
+            <section id="minha-presenca" class="py-12 px-6 bg-[#00040a]">
+                    <div class="bg-[#001d3d]/40 p-8 rounded-3xl border border-blue-500/20 max-w-md w-full text-left mx-auto relative group">
+                        <button onclick="editRSVP()" class="absolute top-4 right-4 bg-blue-500/20 hover:bg-blue-500/40 p-2 rounded-lg text-[10px] uppercase font-bold tracking-widest flex items-center gap-2 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                            Editar
+                        </button>
+                        <h3 id="user-name-display" class="text-2xl font-serif mb-2">Convidado</h3>
+                        <p class="text-blue-400 text-xs uppercase tracking-widest mb-6">Status: Confirmado</p>
+                        <div class="grid grid-cols-2 gap-4 text-center mb-6">
+                            <div class="bg-blue-950/50 p-4 rounded-xl">
+                                <span id="user-adults-display" class="block text-2xl font-serif">0</span>
+                                <span class="text-[8px] uppercase text-white/40">Adultos</span>
+                            </div>
+                            <div class="bg-blue-950/50 p-4 rounded-xl">
+                                <span id="user-children-display" class="block text-2xl font-serif">0</span>
+                                <span class="text-[8px] uppercase text-white/40">Crianças</span>
+                            </div>
                         </div>
-                        <div class="bg-blue-950/50 p-4 rounded-xl">
-                            <span id="user-children-display" class="block text-2xl font-serif">0</span>
-                            <span class="text-[8px] uppercase text-white/40">Crianças</span>
+                        <div id="user-companions-container" class="hidden border-t border-blue-500/10 pt-6">
+                            <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-3">Acompanhantes:</p>
+                            <div id="user-companions-display" class="flex flex-wrap gap-2"></div>
                         </div>
                     </div>
-                </div>
             </section>
 
-            <!-- Evento -->
-            <section id="evento" class="py-20 px-6 bg-[#00040a]">
+            <section id="evento" class="py-12 px-6 bg-[#00040a]">
                 <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
                     <div class="space-y-8">
                         <div class="p-8 bg-blue-900/10 rounded-3xl border border-blue-500/10">
@@ -249,15 +289,14 @@
                     <div class="h-[400px] bg-blue-900/20 rounded-[3rem] overflow-hidden relative group">
                         <img id="carousel-img" src="https://i.imgur.com/obTc9mr.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-all duration-700" alt="Foto 1" style="transition: opacity 0.5s ease-in-out;">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-8 flex flex-col justify-end">
-                            <h4 class="text-2xl font-serif text-white mb-2">Maria Valentina</h4>
-                            <p class="text-blue-300/70 text-sm">Bacharel em Psicologia</p>
+                            <h4 class="text-xl md:text-2xl font-sans font-light uppercase tracking-[0.4em] text-white mb-2 opacity-90">Maria Valentina</h4>
+                            <p class="text-blue-300/50 text-[10px] uppercase tracking-widest font-sans">Bacharel em Psicologia</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Local -->
-            <section id="local" class="py-20 px-6 bg-[#000814]">
+            <section id="local" class="py-12 px-6 bg-[#000814]">
                 <div class="max-w-4xl mx-auto text-center">
                     <h2 class="text-4xl font-serif mb-10">Localização</h2>
                     <div class="h-[400px] rounded-[3rem] overflow-hidden border border-blue-500/20 relative">
@@ -273,74 +312,217 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Footer com Acesso Restrito e Créditos -->
+            <footer class="py-20 flex flex-col items-center bg-[#000814] border-t border-blue-900/10 px-6 text-center">
+                <!-- Logo Apagada -->
+                <img src="https://i.imgur.com/tlyqJn0.png" alt="Logo MV" class="h-20 md:h-32 opacity-15 mb-8 grayscale pointer-events-none">
+                
+                <!-- Frase -->
+                <p class="text-[11px] md:text-xs text-blue-100/40 font-sans font-light max-w-lg mb-12 italic leading-relaxed">
+                    "Conheça todas as teorias, domine todas as técnicas, mas ao tocar uma alma humana, seja apenas outra alma humana"
+                </p>
+
+                <button onclick="toggleAdmin()" class="text-[10px] text-blue-300/40 hover:text-white border border-blue-500/10 px-8 py-3 rounded-full uppercase tracking-[0.3em] font-bold transition-all hover:bg-blue-500/10 hover:border-blue-500/30 mb-16">
+                    Acesso restrito
+                </button>
+
+                <!-- Créditos -->
+                <div class="space-y-1">
+                    <p class="text-[9px] uppercase tracking-[0.2em] text-white/20">Site desenvolvido por Igor A. Londero</p>
+                    <a href="https://instagram.com/igorlondero1" target="_blank" class="text-[9px] tracking-[0.1em] text-blue-400/40 hover:text-blue-400 transition-colors">@igorlondero1</a>
+                </div>
+            </footer>
         </div>
 
         <!-- MODAL ADMIN -->
-        <div id="admin-modal" class="hidden fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-6">
-            <div class="w-full max-w-md bg-[#001d3d] border border-blue-500/20 p-8 rounded-3xl relative">
-                <button onclick="toggleAdmin()" class="absolute top-4 right-4 text-white/40 hover:text-white">✕</button>
-                <h2 class="text-2xl font-serif mb-6 text-center">Acesso Restrito</h2>
-                <input id="admin-pass" type="password" placeholder="Senha" class="w-full bg-black/40 border border-blue-500/20 rounded-xl px-4 py-3 mb-4 text-white">
-                <button onclick="checkAdmin()" class="w-full bg-blue-600 py-3 rounded-xl font-bold uppercase text-xs">Entrar</button>
-                <p id="admin-error" class="text-red-400 text-xs text-center mt-4 hidden">Senha incorreta</p>
+        <div id="admin-modal" class="hidden fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-6">
+            <div class="w-full max-w-md bg-[#001d3d] border border-blue-500/30 p-6 md:p-10 rounded-[2.5rem] relative shadow-[0_0_50px_rgba(30,58,138,0.3)] max-h-[90vh] overflow-y-auto custom-scrollbar">
+                <button onclick="toggleAdmin()" class="absolute top-6 right-6 text-white/40 hover:text-white transition-colors z-20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
                 
-                <!-- Conteúdo Admin (Só aparece se senha ok) -->
-                <div id="admin-content" class="hidden mt-8 pt-8 border-t border-white/10">
-                    <a href="https://docs.google.com/spreadsheets/d/1GPPD4VvLTwxDnANE_X7QB5UIZHfdNusx0EEsHiJKq_w/edit" target="_blank" class="block w-full bg-green-700 text-center py-3 rounded-xl font-bold uppercase text-xs mb-4">
-                        Abrir Planilha Google
-                    </a>
-                    <p class="text-center text-xs text-white/40">Para gerenciar convidados, use a planilha diretamente.</p>
+                <div id="admin-login-view">
+                    <h2 class="text-3xl font-serif mb-2 text-center text-white">Acesso Restrito</h2>
+                    <p class="text-blue-400/60 text-[10px] uppercase tracking-widest text-center mb-8 font-bold">Área do Organizador</p>
+                    
+                    <div class="space-y-4">
+                        <input id="admin-pass" type="password" placeholder="Digite a senha de acesso" class="w-full bg-black/40 border border-blue-500/20 rounded-2xl px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-center">
+                        <button onclick="checkAdmin()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold uppercase text-xs tracking-widest transition-all shadow-lg">Entrar</button>
+                        <p id="admin-error" class="text-red-400 text-[10px] text-center mt-2 hidden uppercase font-bold tracking-widest">Senha incorreta</p>
+                    </div>
+                </div>
+                
+                <div id="admin-content" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-serif text-white">Lista de Convidados</h2>
+                        <button onclick="loadGuestList()" class="text-blue-400 text-[10px] uppercase font-bold tracking-widest hover:text-blue-300 transition-colors">Atualizar</button>
+                    </div>
+
+                    <!-- Totais -->
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-blue-950/40 border border-blue-500/10 p-4 rounded-2xl text-center">
+                            <span id="total-adults" class="block text-2xl font-serif text-white">0</span>
+                            <span class="text-[8px] uppercase text-blue-400 font-bold tracking-widest">Total Adultos</span>
+                        </div>
+                        <div class="bg-blue-950/40 border border-blue-500/10 p-4 rounded-2xl text-center">
+                            <span id="total-children" class="block text-2xl font-serif text-white">0</span>
+                            <span class="text-[8px] uppercase text-blue-400 font-bold tracking-widest">Total Crianças</span>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto no-scrollbar max-h-[400px] overflow-y-auto pr-2">
+                        <table class="w-full text-left text-[10px] uppercase tracking-wider">
+                            <thead class="sticky top-0 bg-[#001d3d] text-blue-400 font-bold border-b border-blue-500/20 z-10">
+                                <tr>
+                                    <th class="py-4 px-3">Nome</th>
+                                    <th class="py-4 px-3">Status</th>
+                                    <th class="py-4 px-3">Acomp.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guest-list-body" class="divide-y divide-blue-500/10">
+                                <tr><td colspan="3" class="py-12 text-center text-white/40 italic">Carregando convidados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-white/10">
+                        <a href="https://docs.google.com/spreadsheets/d/1GPPD4VvLTwxDnANE_X7QB5UIZHfdNusx0EEsHiJKq_w/edit" target="_blank" class="flex items-center justify-center gap-2 w-full bg-green-600/10 hover:bg-green-600/20 text-green-400 py-4 rounded-2xl font-bold uppercase text-[10px] tracking-widest transition-all border border-green-500/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            Abrir Planilha Completa
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- LÓGICA JAVASCRIPT -->
     <script>
-        // CONFIGURAÇÃO
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAX_VjK_mMIw_vYczPNkfGIlT7fAuaMBcnAkmDd5UnsiqgfUmVcso5rlBiUCvn0nXC/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyj_2LEKaOZ-DlXaUc27wyC041kVADQpWWjbb1MMwfw9jOceIZjyyIYJSuVTTJpr4Kb0Q/exec';
         const EVENT_DATE = new Date('2026-03-21T20:30:00').getTime();
-        let isAttending = null;
-
-        // CARROSSEL DE IMAGENS
-        const carouselImages = [
-            "https://i.imgur.com/obTc9mr.jpeg",
-            "https://i.imgur.com/68Ba0yL.jpeg"
-        ];
+        const carouselImages = ["https://i.imgur.com/obTc9mr.jpeg", "https://i.imgur.com/68Ba0yL.jpeg", "https://i.imgur.com/yKIKYgX.jpeg"];
         let currentImageIndex = 0;
+        let isAttending = null;
+        let isLoginMode = false;
 
-        function startCarousel() {
-            const imgElement = document.getElementById('carousel-img');
-            if (!imgElement) return;
+        function toggleLoginMode() {
+            isLoginMode = !isLoginMode;
+            const regFields = document.getElementById('registration-fields');
+            const toggleBtn = document.getElementById('toggle-login-btn');
+            const submitBtn = document.getElementById('btn-submit');
+            const formTitle = document.getElementById('form-title');
+            const contatoInput = document.getElementById('input-contato');
 
-            setInterval(() => {
-                currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
-                imgElement.style.opacity = 0; // Fade out
-                setTimeout(() => {
-                    imgElement.src = carouselImages[currentImageIndex];
-                    imgElement.style.opacity = 0.8; // Fade in
-                }, 500); // Tempo para a imagem trocar antes do fade in
-            }, 4000);
+            if (isLoginMode) {
+                regFields.classList.add('hidden');
+                contatoInput.required = false;
+                toggleBtn.innerText = 'Quero me registrar';
+                submitBtn.innerText = 'Entrar';
+                formTitle.innerText = 'Acessar Convite';
+            } else {
+                regFields.classList.remove('hidden');
+                contatoInput.required = true;
+                toggleBtn.innerText = 'Já confirmei minha presença';
+                submitBtn.innerText = 'Confirmar';
+                formTitle.innerText = 'Registro de Presença';
+            }
         }
 
-        // INICIALIZAÇÃO
         window.onload = function() {
+            try {
+                const savedData = localStorage.getItem('graduation_rsvp');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    if (data.comparecera === 'Sim') {
+                        showMainSite(data);
+                    } else {
+                        showNotAttendingScreen();
+                    }
+                }
+            } catch (e) { localStorage.removeItem('graduation_rsvp'); }
+            startCountdown();
+            startCarousel();
+            initScrollEffect();
+        };
+
+        function showNotAttendingScreen() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('main-site').classList.add('hidden');
+            document.getElementById('not-attending-screen').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function resetRSVP() {
+            document.getElementById('not-attending-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            
+            // Se houver dados salvos, preenche o nome e contato para facilitar
             const savedData = localStorage.getItem('graduation_rsvp');
             if (savedData) {
                 const data = JSON.parse(savedData);
-                showMainSite(data);
+                document.getElementById('input-nome').value = data.nome || '';
+                document.getElementById('input-contato').value = data.contato || '';
             }
-            startCountdown();
-            startCarousel();
-        };
+            
+            setAttendance(null);
+            document.getElementById('rsvp-section').scrollIntoView({behavior: 'smooth'});
+        }
 
-        // LÓGICA DE RSVP
+        function initScrollEffect() {
+            const nav = document.getElementById('main-nav');
+            const container = document.getElementById('nav-container');
+            const logo = document.getElementById('nav-logo');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    nav.classList.add('py-3');
+                    nav.classList.remove('py-6');
+                    container.classList.remove('gap-6');
+                    container.classList.add('gap-2');
+                    logo.classList.add('h-8');
+                    logo.classList.remove('h-12', 'md:h-16');
+                } else {
+                    nav.classList.add('py-6');
+                    nav.classList.remove('py-3');
+                    container.classList.add('gap-6');
+                    container.classList.remove('gap-2');
+                    logo.classList.remove('h-8');
+                    logo.classList.add('h-12', 'md:h-16');
+                }
+            });
+        }
+
+        function startCarousel() {
+            const img = document.getElementById('carousel-img');
+            if (!img) return;
+            setInterval(() => {
+                currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+                img.style.opacity = 0;
+                setTimeout(() => {
+                    img.src = carouselImages[currentImageIndex];
+                    img.style.opacity = 0.8;
+                }, 500);
+            }, 4000);
+        }
+
+        function startCountdown() {
+            setInterval(() => {
+                const distance = EVENT_DATE - new Date().getTime();
+                if (distance < 0) return;
+                document.getElementById('days').innerText = Math.floor(distance / 86400000).toString().padStart(2, '0');
+                document.getElementById('hours').innerText = Math.floor((distance % 86400000) / 3600000).toString().padStart(2, '0');
+                document.getElementById('mins').innerText = Math.floor((distance % 3600000) / 60000).toString().padStart(2, '0');
+                document.getElementById('secs').innerText = Math.floor((distance % 60000) / 1000).toString().padStart(2, '0');
+            }, 1000);
+        }
+
         function changeCount(id, delta) {
             const input = document.getElementById('input-' + id);
-            let val = parseInt(input.value) || 0;
-            val = Math.max(0, val + delta);
-            input.value = val;
+            input.value = Math.max(0, (parseInt(input.value) || 0) + delta);
             updateCompanionsList();
         }
 
@@ -349,99 +531,138 @@
             const children = parseInt(document.getElementById('input-criancas').value) || 0;
             const container = document.getElementById('companions-list');
             container.innerHTML = '';
-
             if (adults > 0 || children > 0) {
                 const label = document.createElement('label');
                 label.className = 'text-[9px] font-bold text-blue-400 uppercase tracking-widest block pl-2';
                 label.innerText = 'Nomes dos Acompanhantes';
                 container.appendChild(label);
-
-                for (let i = 0; i < adults; i++) {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'w-full bg-[#000814]/60 border border-blue-500/20 rounded-xl px-4 py-3 text-white text-sm companion-name-input';
-                    input.placeholder = `Nome do Adulto ${i + 1}`;
-                    container.appendChild(input);
-                }
-
-                for (let i = 0; i < children; i++) {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'w-full bg-[#000814]/60 border border-blue-500/20 rounded-xl px-4 py-3 text-white text-sm companion-name-input';
-                    input.placeholder = `Nome da Criança ${i + 1}`;
-                    container.appendChild(input);
-                }
+                for (let i = 0; i < adults; i++) createInput(container, `Nome do Adulto ${i + 1}`);
+                for (let i = 0; i < children; i++) createInput(container, `Nome da Criança ${i + 1}`);
             }
+        }
+
+        function createInput(container, placeholder) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'w-full bg-[#000814]/60 border border-blue-500/20 rounded-xl px-4 py-3 text-white text-sm companion-name-input';
+            input.placeholder = placeholder;
+            container.appendChild(input);
         }
 
         function setAttendance(val) {
             isAttending = val;
-            document.getElementById('btn-sim').className = val 
-                ? 'py-4 rounded-xl border border-blue-400 bg-blue-600 text-white font-bold uppercase text-xs shadow-lg' 
-                : 'py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 text-white/50';
-            
-            document.getElementById('btn-nao').className = !val 
-                ? 'py-4 rounded-xl border border-red-400 bg-red-900/50 text-white font-bold uppercase text-xs shadow-lg' 
-                : 'py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 text-white/50';
-
-            const extraFields = document.getElementById('extra-fields');
-            if (val) {
-                extraFields.classList.remove('hidden');
-            } else {
-                extraFields.classList.add('hidden');
-            }
+            document.getElementById('btn-sim').className = val ? 'py-4 rounded-xl border border-blue-400 bg-blue-600 text-white font-bold uppercase text-xs shadow-lg' : 'py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 text-white/50';
+            document.getElementById('btn-nao').className = !val ? 'py-4 rounded-xl border border-red-400 bg-red-900/50 text-white font-bold uppercase text-xs shadow-lg' : 'py-4 rounded-xl border border-blue-500/20 font-bold uppercase text-xs hover:bg-blue-500/10 text-white/50';
+            document.getElementById('extra-fields').classList.toggle('hidden', !val);
         }
 
         async function handleRSVPSubmit(e) {
             e.preventDefault();
+            const nomeRaw = document.getElementById('input-nome').value;
+            const nome = nomeRaw.trim();
             const btn = document.getElementById('btn-submit');
+            const originalText = btn.innerText;
             
-            if (isAttending === null) {
-                alert('Por favor, selecione SIM ou NÃO.');
-                return;
-            }
-
-            btn.innerText = 'Enviando...';
+            btn.innerText = 'Verificando...'; 
             btn.disabled = true;
 
-            const companionInputs = document.querySelectorAll('.companion-name-input');
-            const companionNames = Array.from(companionInputs).map(input => input.value).filter(name => name.trim() !== '');
-
-            const data = {
-                action: 'upsert',
-                timestamp: new Date().toLocaleString('pt-BR'),
-                nome: document.getElementById('input-nome').value,
-                contato: document.getElementById('input-contato').value,
-                comparecera: isAttending ? 'Sim' : 'Não',
-                adultos: isAttending ? (parseInt(document.getElementById('input-adultos').value) + 1).toString() : '0',
-                criancas: document.getElementById('input-criancas').value,
-                acompanhantes: companionNames.join(', ') || 'Nenhum'
-            };
+            // Normalização local para comparação
+            const normalize = (str) => str ? str.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() : "";
+            const nomeNormalizado = normalize(nome);
 
             try {
-                // Envio com no-cors (não espera resposta JSON para evitar erro de bloqueio)
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+                // 1. BUSCA PRÉVIA (Evita duplicatas e processamento infinito)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 segundos para ler
 
-                // Sucesso simulado (já que no-cors não retorna status)
-                localStorage.setItem('graduation_rsvp', JSON.stringify(data));
-                
-                if (isAttending) {
-                    showMainSite(data);
-                } else {
-                    alert('Obrigado por responder! Uma pena que não poderá vir.');
-                    location.reload();
+                let existingGuest = null;
+                try {
+                    const cacheBuster = Date.now();
+                    const responseRead = await fetch(`${GOOGLE_SCRIPT_URL}?action=read&_=${cacheBuster}`, { signal: controller.signal });
+                    const guests = await responseRead.json();
+                    existingGuest = guests.find(g => normalize(g.nome) === nomeNormalizado);
+                } catch (readErr) {
+                    console.warn('Falha na leitura prévia, tentando registro direto...');
+                }
+                clearTimeout(timeoutId);
+
+                // 2. SE JÁ EXISTE: LOGIN AUTOMÁTICO
+                if (existingGuest) {
+                    btn.innerText = 'Entrando...';
+                    const userData = {
+                        nome: existingGuest.nome,
+                        contato: existingGuest.contato,
+                        comparecera: existingGuest.comparecera,
+                        adultos: existingGuest.adultos,
+                        criancas: existingGuest.criancas,
+                        acompanhantes: existingGuest.acompanhantes
+                    };
+                    localStorage.setItem('graduation_rsvp', JSON.stringify(userData));
+                    
+                    setTimeout(() => {
+                        if (userData.comparecera === 'Sim') showMainSite(userData);
+                        else showNotAttendingScreen();
+                    }, 800);
+                    return;
                 }
 
-            } catch (error) {
-                console.error(error);
-                alert('Erro ao enviar. Tente novamente.');
-                btn.innerText = 'CONFIRMAR';
+                // 3. SE NÃO EXISTE E ESTÁ NO MODO LOGIN: AVISA
+                if (isLoginMode) {
+                    alert('Nome não encontrado. Por favor, preencha seus dados para registrar.');
+                    toggleLoginMode();
+                    btn.innerText = 'Confirmar';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // 4. REGISTRO NOVO
+                if (isAttending === null) {
+                    alert('Selecione SIM ou NÃO.');
+                    btn.innerText = 'Confirmar';
+                    btn.disabled = false;
+                    return;
+                }
+
+                btn.innerText = 'Registrando...';
+                const names = Array.from(document.querySelectorAll('.companion-name-input')).map(i => i.value).filter(n => n.trim() !== '');
+                const data = {
+                    action: 'upsert', 
+                    nome: nome, 
+                    contato: document.getElementById('input-contato').value,
+                    comparecera: isAttending ? 'Sim' : 'Não', 
+                    adultos: isAttending ? (parseInt(document.getElementById('input-adultos').value) + 1).toString() : '0',
+                    criancas: document.getElementById('input-criancas').value, 
+                    acompanhantes: names.join(', ') || 'Nenhum',
+                    data_hora: new Date().toLocaleString('pt-BR')
+                };
+
+                // Envio com timeout de segurança
+                const postController = new AbortController();
+                const postTimeout = setTimeout(() => postController.abort(), 10000);
+
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, { 
+                        method: 'POST', 
+                        mode: 'no-cors', 
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify(data),
+                        signal: postController.signal
+                    });
+                } catch (postErr) {
+                    console.error('Erro no POST, mas salvando localmente:', postErr);
+                }
+
+                clearTimeout(postTimeout);
+                localStorage.setItem('graduation_rsvp', JSON.stringify(data));
+                
+                if (isAttending) showMainSite(data);
+                else showNotAttendingScreen();
+
+            } catch (err) {
+                console.error('Erro Geral:', err);
                 btn.disabled = false;
+                btn.innerText = originalText;
+                alert('Ocorreu um erro. Verifique sua internet e tente novamente.');
             }
         }
 
@@ -449,53 +670,147 @@
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('main-site').classList.remove('hidden');
             
-            // Preencher dados na home
             document.getElementById('user-name-display').innerText = data.nome;
             document.getElementById('user-adults-display').innerText = data.adultos || 1;
             document.getElementById('user-children-display').innerText = data.criancas || 0;
+
+            const companionsContainer = document.getElementById('user-companions-container');
+            const companionsDisplay = document.getElementById('user-companions-display');
+            
+            if (data.acompanhantes && data.acompanhantes !== 'Nenhum') {
+                companionsContainer.classList.remove('hidden');
+                companionsDisplay.innerHTML = '';
+                data.acompanhantes.split(', ').forEach(name => {
+                    const span = document.createElement('span');
+                    span.className = 'bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-[10px] text-white/80 italic';
+                    span.innerText = name;
+                    companionsDisplay.appendChild(span);
+                });
+            } else {
+                companionsContainer.classList.add('hidden');
+            }
             
             window.scrollTo(0,0);
         }
 
-        function logout() {
-            localStorage.removeItem('graduation_rsvp');
-            location.reload();
+        function editRSVP() {
+            const savedData = localStorage.getItem('graduation_rsvp');
+            if (!savedData) return;
+            
+            const data = JSON.parse(savedData);
+            
+            // Voltar para a tela de boas-vindas
+            document.getElementById('main-site').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            
+            // Preencher o formulário
+            document.getElementById('input-nome').value = data.nome;
+            document.getElementById('input-contato').value = data.contato;
+            
+            const isSim = data.comparecera === 'Sim';
+            setAttendance(isSim);
+            
+            if (isSim) {
+                // Ajustar contadores (lembrando que adultos no dado inclui o próprio convidado)
+                const adultosExtras = Math.max(0, (parseInt(data.adultos) || 1) - 1);
+                document.getElementById('input-adultos').value = adultosExtras;
+                document.getElementById('input-criancas').value = data.criancas || 0;
+                
+                updateCompanionsList();
+                
+                // Preencher nomes dos acompanhantes se existirem
+                if (data.acompanhantes && data.acompanhantes !== 'Nenhum') {
+                    const names = data.acompanhantes.split(', ');
+                    const inputs = document.querySelectorAll('.companion-name-input');
+                    names.forEach((name, i) => {
+                        if (inputs[i]) inputs[i].value = name;
+                    });
+                }
+            }
+            
+            // Scroll para o formulário
+            document.getElementById('rsvp-section').scrollIntoView({behavior: 'smooth'});
         }
 
-        // ADMIN
-        function toggleAdmin() {
-            const modal = document.getElementById('admin-modal');
-            modal.classList.toggle('hidden');
-        }
-
+        function logout() { localStorage.removeItem('graduation_rsvp'); location.reload(); }
+        function toggleAdmin() { document.getElementById('admin-modal').classList.toggle('hidden'); }
         function checkAdmin() {
             const pass = document.getElementById('admin-pass').value;
-            // A senha 'valentina2026' codificada em Base64 é 'dmFsZW50aW5hMjAyNg=='
-            // Isso impede a leitura direta, mas não é uma segurança de nível bancário.
             if (btoa(pass) === 'dmFsZW50aW5hMjAyNg==') {
                 document.getElementById('admin-content').classList.remove('hidden');
-                document.getElementById('admin-error').classList.add('hidden');
-                // Ocultar campo de senha após sucesso
-                document.getElementById('admin-pass').classList.add('hidden');
-                document.querySelector('button[onclick="checkAdmin()"]').classList.add('hidden');
-            } else {
-                document.getElementById('admin-error').classList.remove('hidden');
-            }
+                document.getElementById('admin-login-view').classList.add('hidden');
+                // Aumentar o modal para a lista
+                document.querySelector('#admin-modal > div').classList.replace('max-w-md', 'max-w-2xl');
+                loadGuestList();
+            } else document.getElementById('admin-error').classList.remove('hidden');
         }
 
-        // CONTAGEM REGRESSIVA
-        function startCountdown() {
-            setInterval(() => {
-                const now = new Date().getTime();
-                const distance = EVENT_DATE - now;
+        async function loadGuestList() {
+            const body = document.getElementById('guest-list-body');
+            body.innerHTML = '<tr><td colspan="3" class="py-12 text-center text-white/40 italic">Buscando dados na planilha...</td></tr>';
+            
+            try {
+                // Tenta buscar via GET (mais estável para leitura no Apps Script)
+                const response = await fetch(GOOGLE_SCRIPT_URL + '?action=read');
+                const textResponse = await response.text();
+                
+                let data = [];
+                try {
+                    data = JSON.parse(textResponse);
+                } catch (e) {
+                    if (textResponse.includes('Conectado')) {
+                        data = [];
+                    } else {
+                        throw new Error('Dados inválidos recebidos da planilha');
+                    }
+                }
+                
+                body.innerHTML = '';
+                if (!data || data.length === 0) {
+                    body.innerHTML = '<tr><td colspan="3" class="py-12 text-center text-white/40">Nenhum registro encontrado.</td></tr>';
+                    return;
+                }
 
-                if (distance < 0) return;
+                let totalAdults = 0;
+                let totalChildren = 0;
 
-                document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-                document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-                document.getElementById('mins').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-                document.getElementById('secs').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
-            }, 1000);
+                data.forEach(guest => {
+                    const adults = parseInt(guest.adultos) || 0;
+                    const children = parseInt(guest.criancas) || 0;
+                    
+                    if (guest.comparecera === 'Sim') {
+                        totalAdults += adults;
+                        totalChildren += children;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-blue-500/5 transition-colors';
+                    tr.innerHTML = `
+                        <td class="py-4 px-3 font-medium text-white">
+                            ${guest.nome}
+                            <span class="block text-[8px] text-blue-400/50 lowercase">${guest.contato}</span>
+                        </td>
+                        <td class="py-4 px-3 ${guest.comparecera === 'Sim' ? 'text-green-400' : 'text-red-400'}">${guest.comparecera}</td>
+                        <td class="py-4 px-3 text-white/60 text-[9px]">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-white/80">${adults} Ad. / ${children} Cri.</span>
+                                <span class="italic text-[8px] truncate max-w-[100px]">${guest.acompanhantes || 'Nenhum'}</span>
+                            </div>
+                        </td>
+                    `;
+                    body.appendChild(tr);
+                });
+
+                // Atualiza os elementos de total na tela
+                const totalAdultsEl = document.getElementById('total-adults');
+                const totalChildrenEl = document.getElementById('total-children');
+                if (totalAdultsEl) totalAdultsEl.innerText = totalAdults;
+                if (totalChildrenEl) totalChildrenEl.innerText = totalChildren;
+
+            } catch (error) {
+                console.error(error);
+                body.innerHTML = '<tr><td colspan="3" class="py-12 text-center text-red-400/60">Erro ao carregar. Verifique se a planilha está pública.</td></tr>';
+            }
         }
     </script>
 </body>
