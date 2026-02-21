@@ -742,6 +742,34 @@
             } else document.getElementById('admin-error').classList.remove('hidden');
         }
 
+        function showMainSite(data) {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('not-attending-screen').classList.add('hidden');
+            document.getElementById('main-site').classList.remove('hidden');
+            
+            document.getElementById('user-name-display').innerText = data.nome;
+            document.getElementById('user-adults-display').innerText = data.adultos || 1;
+            document.getElementById('user-children-display').innerText = data.criancas || 0;
+
+            const companionsContainer = document.getElementById('user-companions-container');
+            const companionsDisplay = document.getElementById('user-companions-display');
+            
+            if (data.acompanhantes && data.acompanhantes !== 'Nenhum') {
+                companionsContainer.classList.remove('hidden');
+                companionsDisplay.innerHTML = '';
+                data.acompanhantes.split(', ').forEach(name => {
+                    const span = document.createElement('span');
+                    span.className = 'bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full text-[10px] text-white/80 italic';
+                    span.innerText = name;
+                    companionsDisplay.appendChild(span);
+                });
+            } else {
+                companionsContainer.classList.add('hidden');
+            }
+            
+            window.scrollTo(0,0);
+        }
+
         async function loadGuestList() {
             const body = document.getElementById('guest-list-body');
             body.innerHTML = '<tr><td colspan="3" class="py-12 text-center text-white/40 italic">Buscando dados na planilha...</td></tr>';
