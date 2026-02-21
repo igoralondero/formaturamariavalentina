@@ -417,9 +417,6 @@
             const submitBtn = document.getElementById('btn-submit');
             const formTitle = document.getElementById('form-title');
             const contatoInput = document.getElementById('input-contato');
-            const nomeInput = document.getElementById('input-nome');
-            
-            nomeInput.readOnly = false; // Garante que o campo de nome esteja editável
 
             if (isLoginMode) {
                 regFields.classList.add('hidden');
@@ -670,7 +667,6 @@
                 console.error('Erro Geral:', err);
                 btn.disabled = false;
                 btn.innerText = originalText;
-                document.getElementById('input-nome').readOnly = false; // Desbloqueia o campo em caso de erro
                 alert('Ocorreu um erro de conexão. Por favor, tente novamente.');
             }
         }
@@ -694,11 +690,8 @@
             const savedData = localStorage.getItem('graduation_rsvp');
             if (savedData) {
                 const data = JSON.parse(savedData);
-                const nomeInput = document.getElementById('input-nome');
-                nomeInput.value = data.nome || '';
+                document.getElementById('input-nome').value = data.nome || '';
                 document.getElementById('input-contato').value = data.contato || '';
-                // Trava o campo de nome para garantir que o registro correto seja atualizado
-                nomeInput.readOnly = true; 
             }
             
             // Reseta a seleção de presença
